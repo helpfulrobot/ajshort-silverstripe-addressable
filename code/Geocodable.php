@@ -5,34 +5,39 @@
  *
  * @package silverstripe-addressable
  */
-class Geocodable extends DataExtension {
+class Geocodable extends DataExtension
+{
 
-	private static $db = array(
-		'Lat' => 'Decimal(9,5)',
-		'Lng' => 'Decimal(9,5)'
-	);
+    private static $db = array(
+        'Lat' => 'Decimal(9,5)',
+        'Lng' => 'Decimal(9,5)'
+    );
 
-	public function onBeforeWrite() {
-		if (!$this->owner->isAddressChanged()) return;
+    public function onBeforeWrite()
+    {
+        if (!$this->owner->isAddressChanged()) {
+            return;
+        }
 
-		$address = $this->owner->getFullAddress();
-		$region  = strtolower($this->owner->Country);
+        $address = $this->owner->getFullAddress();
+        $region  = strtolower($this->owner->Country);
 
-		if(!$point = GoogleGeocoding::address_to_point($address, $region)) {
-			return;
-		}
+        if (!$point = GoogleGeocoding::address_to_point($address, $region)) {
+            return;
+        }
 
-		$this->owner->Lat = $point['lat'];
-		$this->owner->Lng = $point['lng'];
-	}
+        $this->owner->Lat = $point['lat'];
+        $this->owner->Lng = $point['lng'];
+    }
 
-	public function updateCMSFields(FieldList $fields) {
-		$fields->removeByName('Lat');
-		$fields->removeByName('Lng');
-	}
+    public function updateCMSFields(FieldList $fields)
+    {
+        $fields->removeByName('Lat');
+        $fields->removeByName('Lng');
+    }
 
-	public function updateFrontEndFields(FieldList $fields) {
-		$this->updateCMSFields($fields);
-	}
-
+    public function updateFrontEndFields(FieldList $fields)
+    {
+        $this->updateCMSFields($fields);
+    }
 }
